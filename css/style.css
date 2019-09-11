@@ -40,12 +40,12 @@ h1 {
 /* IMAGES */
 #image-wrapper {
   text-align: center;
-  padding: 10px;
+  padding: 0 10px;
   background: #fcffdf;
   box-shadow: 0px 2px 6px 0px rgba(0,0,0,0.4);
   border-radius: 5px;
   font-family: 'Poiret One', cursive;
-  margin: 100px auto;
+  margin: 20px auto 100px auto;
 }
  h4 {
   padding: 5px;
@@ -54,17 +54,29 @@ h1 {
   font-weight: 500;
   letter-spacing: 5px;
   border-bottom: 1px solid black;
+  margin: 25px auto 15px auto;
 }
-#image-wrapper p {
-  font-size:25px;
+#image-wrapper p, .dropdown-wrapper label {
+  font-size: 31px;
   text-align: right;
   letter-spacing: 2px;
+  padding-bottom: 20px;
+  line-height: 31px;
 }
 #votes-left {
   font-weight: 900;
 }
-#items-per-page {
-  float: right;
+.dropdown-wrapper * {
+  float: left;
+}
+.dropdown-wrapper select {
+  font-family: 'Poiret One', cursive;
+  font-size: 18px;
+  font-weight: 900;
+  padding: 3px 10px;
+  border-radius: 5px;
+  outline: none;
+  margin-right: 15px;
 }
 #image-container {
   clear: both;
@@ -73,6 +85,7 @@ h1 {
   flex-wrap: wrap;
   justify-content: space-between;
   align-content: space-between;
+  padding-bottom: 30px;
 }
 #image-container img, #results img {
   width: 300px;
@@ -108,8 +121,9 @@ h1 {
   margin: 10px  auto;
 }
 #results ul {
-  width: 60%;
-  margin: 20px auto;
+  width: 400px;
+  margin: 10px auto;
+  border-radius: 5px;
   background: rgba(255, 255, 255, 0.8);
   box-shadow: 1px 1px 3px 0px rgba(0,0,0,0.3);
 }

@@ -20,15 +20,18 @@
     <main>
       <div id="image-wrapper">
         <h4>PLEASE CLICK ON THE MOST APPEALING ITEM</h4>
-        <select id="items-per-page">
-          <option label="3" value="3"></option>
-          <option label="6" value="6" selected></option>
-          <option label="9" value="9"></option>
-        </select>
         <section id="image-container">
         </section>
-        <!-- <button>START OVER</button> -->
+        <div class="dropdown-wrapper">
+          <select id="items-per-page">
+            <option label="3" value="3"></option>
+            <option label="6" value="6" selected></option>
+            <option label="9" value="9"></option>
+          </select>
+          <label for="items-per-page">ITEMS PER PAGE</label>
+        </div>
         <p>VOTES LEFT: <span id="votes-left">25</span></p>
+        <!-- <button>START OVER</button> -->
       </div>
       <section id="results">
       </section>

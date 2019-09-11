@@ -122,7 +122,7 @@ function favoriteItem() {
 
 //function for rendering list with items
 function renderVotes() {
-  resultsEl.style.padding = '10px';
+  resultsEl.style.paddingBottom = '30px';
   renderEl('h4', resultsEl, 'HERE\'S THE LIST OF ITEMS YOU VOTED FOR:');
   var ulEl = renderEl('ul', resultsEl);
   for (var i = 0; i < allImagesArr.length; i++) {
@@ -161,6 +161,7 @@ function votesHandler(e) {
 function changeDisplayedPictures(e) {
   itemsPerPage = parseInt(e.target.value);
   renderAllPictures();
+  itemsPerPage.scrollIntoView();
 }
 
 //*****EXECUTION*****
