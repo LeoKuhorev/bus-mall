@@ -11,7 +11,7 @@ header {
 }
 
 /* LOGO */
-/* bus color: #aa0000 */
+/* FYI bus red color: #aa0000 */
 h1 {
   display: inline-block;
   position: relative;
@@ -23,6 +23,7 @@ h1 {
   color: rgb(252, 255, 223);
   font-weight: 400;
 }
+/* animated spinning wheels */
 .spin {
   position: relative;
   animation: spin 1s linear infinite;
@@ -58,7 +59,7 @@ h1 {
 #votes-left {
   font-weight: 900;
 }
-#display-img {
+#items-per-page {
   float: right;
 }
 #image-container {
@@ -79,19 +80,11 @@ h1 {
   cursor: pointer;
   border-radius: 5px;
 }
-#image-container img:hover {
-  padding: 0;
+.zoom:hover, .zoom:active {
+  padding: 0 !important;
+  margin: 35px 30px !important;
   transform: scale(1.5);
   transition: 400ms;
-}
-#image-container img:active {
-  transform: scale(1.5);
-}
-
-/* when out of votes */
-.shake:hover {
-  padding: 25px !important;
-  transform: none !important;
 }
 .shake:active {
   animation: shake 0.2s linear infinite;
