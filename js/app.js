@@ -3,9 +3,7 @@
 //*****GLOBAL VARIABLES*****
 //DOM
 var imageContainerEl = document.getElementById('image-container');
-var img1El = document.getElementById('img-1');
-var img2El = document.getElementById('img-2');
-var img3El = document.getElementById('img-3');
+var displayImgEl = document.getElementById('display-img');
 
 //array with all image names
 var IMAGE_NAMES_ARR = ['bag', 'banana', 'bathroom', 'boots', 'breakfast', 'bubblegum', 'chair', 'cthulhu', 'dog-duck', 'dragon', 'pen', 'pet-sweep', 'scissors', 'shark', 'sweep', 'tauntaun', 'unicorn', 'usb', 'water-can', 'wine-glass'];
@@ -13,12 +11,15 @@ var IMAGE_NAMES_ARR = ['bag', 'banana', 'bathroom', 'boots', 'breakfast', 'bubbl
 //array with all image objects
 var allImagesArr = [];
 
-//array with last 6 image indexes
+//array with last image indexes (length changes depending on displayImg value)
 var indexArr = [];
 
 //defining number of user selections
 var NUMBER_OF_SELECTIONS = 25;
 var selectionCount = 0;
+
+//how many pictures are displayed at a time (page loads with 3)
+var displayImg = 3;
 
 //*****FUNCTIONS*****
 //object constructor function
@@ -42,7 +43,7 @@ function uniqueIndex(index) {
   while (indexArr.includes(index)) {
     index = generateRandom(allImagesArr.length);
   }
-  if (indexArr.length >= 6) {
+  while (indexArr.length >= displayImg * 2) {
     indexArr.shift();
   }
   indexArr.push(index);
@@ -50,26 +51,31 @@ function uniqueIndex(index) {
 }
 
 //function for rendering image to the page
-function renderImage(image, object) {
-  image.src = object.src;
-  image.alt = image.title = object.name;
+function renderImage(object) {
+  var imageEl = document.createElement('img');
+  imageEl.src = object.src;
+  imageEl.alt = imageEl.title = object.name;
+  imageContainerEl.appendChild(imageEl);
   object.views ++;
 }
 
 //function for generating 3 random pictures and rendering them to the page
-function generatePicture(element) {
+function generatePicture() {
   var index = uniqueIndex(index);
-  renderImage(element, allImagesArr[index]);
+  renderImage(allImagesArr[index]);
 }
 
 //function for rendering all pictures
 function renderAllPictures() {
-  generatePicture(img1El);
-  generatePicture(img2El);
-  generatePicture(img3El);
+  while(imageContainerEl.firstChild) {
+    imageContainerEl.removeChild(imageContainerEl.firstChild);
+  }
+  for (var i = 0; i < displayImg; i++) {
+    generatePicture();
+  }
 
   console.table(indexArr);
-  console.table(allImagesArr);
+  // console.table(allImagesArr);
 }
 
 //*****EVENT HANDLERS*****
@@ -80,6 +86,7 @@ function votesCounter(e) {
       allImagesArr[i].votes++;
     }
   }
+
   renderAllPictures();
 
   selectionCount++;
@@ -87,6 +94,11 @@ function votesCounter(e) {
   if (selectionCount >= NUMBER_OF_SELECTIONS) {
     imageContainerEl.removeEventListener('click', votesCounter);
   }
+}
+
+function changeDisplayedPictures(e) {
+  displayImg = parseInt(e.target.value);
+  renderAllPictures();
 }
 
 //*****EXECUTION*****
@@ -100,3 +112,4 @@ renderAllPictures();
 
 //*****EVENT LISTENERS*****
 imageContainerEl.addEventListener('click', votesCounter);
+displayImgEl.addEventListener('change', changeDisplayedPictures);
