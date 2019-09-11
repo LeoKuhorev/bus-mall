@@ -20,7 +20,7 @@ var NUMBER_OF_SELECTIONS = 25;
 var selectionCount = 0;
 
 //how many pictures are displayed at a time (page loads with 3)
-var displayImg = 3;
+var displayImg = 6;
 
 //*****FUNCTIONS*****
 //object constructor function
