@@ -19,3 +19,5 @@ CREDITS:
 [Bus icon by Icons8](https://icons8.com/icon/119440/bus)
 
 [array.includes() method](https://www.w3schools.com/jsref/jsref_includes_array.asp)
+
+[scrollIntoView() method](https://www.w3schools.com/jsref/met_element_scrollintoview.asp)

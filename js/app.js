@@ -101,13 +101,16 @@ function renderAllPictures() {
 
 //function for rendering list with items with votes
 function renderVotes() {
-  var ulEl = renderEl('ul',resultsEl);
+  resultsEl.style.padding = '10px';
+  renderEl('h4', resultsEl, 'HERE\'S THE LIST OF THE ITEMS YOU VOTED FOR:');
+  var ulEl = renderEl('ul', resultsEl);
   for (var i = 0; i < allImagesArr.length; i++) {
     if (allImagesArr[i].votes > 0) {
-      var string = `for  item ${allImagesArr[i].name} - ${allImagesArr[i].votes} votes out of ${allImagesArr[i].views} views`;
+      var string = `for  item ${allImagesArr[i].name} - ${allImagesArr[i].votes} vote(s) out of ${allImagesArr[i].views} view(s)`;
       renderEl('li', ulEl, string);
     }
   }
+  resultsEl.scrollIntoView();
 }
 
 //*****EVENT HANDLERS*****
