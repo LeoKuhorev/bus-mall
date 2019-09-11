@@ -35,18 +35,24 @@ function Picture(name) {
 }
 
 //object ptototype for rendering each image to the page
-Picture.prototype.renderImage = function() {
+Picture.prototype.renderImage = function(parent) {
   var imageEl = document.createElement('img');
   imageEl.src = this.src;
   imageEl.alt = imageEl.title = this.name;
-  imageContainerEl.appendChild(imageEl);
+  parent.appendChild(imageEl);
   this.views ++;
   return imageEl;
 };
 
 //function for generating random number between 0 and max (max not inluded)
-function generateRandom (max) {
+function generateRandom(max) {
   return Math.floor(Math.random() * max);
+}
+
+//function for capitalizing the first letter of a string and replacing dashes with spaces
+function capitalize(string) {
+  var capital = string.charAt(0).toUpperCase() + string.substring(1);
+  return capital.replace('-', ' ');
 }
 
 //function for assigning unique random indexes
@@ -75,7 +81,7 @@ function renderEl(element, parent, textContent) {
 //function for generating unique random pictures and rendering them to the page
 function generatePicture() {
   var index = uniqueIndex();
-  var newEl = allImagesArr[index].renderImage();
+  var newEl = allImagesArr[index].renderImage(imageContainerEl);
   return newEl;
 }
 
@@ -99,14 +105,33 @@ function renderAllPictures() {
   // console.table(allImagesArr);
 }
 
-//function for rendering list with items with votes
+//function for determining and rendering item with highest votes/view ratio
+function favoriteItem() {
+  var highestRatio = 0;
+  var favoriteItemIndex;
+  for (var i = 0; i < allImagesArr.length; i++) {
+    var ratio = (allImagesArr[i].votes / allImagesArr[i].views) * 100;
+    console.log(allImagesArr[i].votes, allImagesArr[i].views, ratio);
+    if (ratio > highestRatio) {
+      highestRatio = ratio;
+      favoriteItemIndex = i;
+    }
+  }
+  renderEl('h4', resultsEl, 'YOUR FAVORITE ITEM: ' + capitalize(allImagesArr[favoriteItemIndex].name));
+  renderEl('h3', resultsEl, '(views to votes ratio: ' + highestRatio.toFixed(2) + '%)');
+  var imgEl = allImagesArr[favoriteItemIndex].renderImage(resultsEl);
+  allImagesArr[favoriteItemIndex].views--;
+  imgEl.className = 'shake';
+}
+
+//function for rendering list with items
 function renderVotes() {
-  resultsEl.style.padding = '10px';
-  renderEl('h4', resultsEl, 'HERE\'S THE LIST OF THE ITEMS YOU VOTED FOR:');
+  resultsEl.style.paddingBottom = '30px';
+  renderEl('h4', resultsEl, 'HERE\'S THE LIST OF ITEMS YOU VOTED FOR:');
   var ulEl = renderEl('ul', resultsEl);
   for (var i = 0; i < allImagesArr.length; i++) {
     if (allImagesArr[i].votes > 0) {
-      var string = `for  item ${allImagesArr[i].name} - ${allImagesArr[i].votes} vote(s) out of ${allImagesArr[i].views} view(s)`;
+      var string = `${capitalize(allImagesArr[i].name)}: ${allImagesArr[i].votes} vote(s) / ${allImagesArr[i].views} view(s)`;
       renderEl('li', ulEl, string);
     }
   }
@@ -123,21 +148,23 @@ function votesHandler(e) {
     }
   }
 
-  //render new pictures
-  renderAllPictures();
-
   //when user spends all votes - render list with results
   votesLeftEl.textContent = VOTES-votesCount;
   if (votesCount >= VOTES) {
     imageContainerEl.removeEventListener('click', votesHandler);
+    votesLeftEl.className = 'red';
+    favoriteItem();
     renderVotes();
   }
+  //render new pictures
+  renderAllPictures();
 }
 
 //function for changing items per page by user request
 function changeDisplayedPictures(e) {
   itemsPerPage = parseInt(e.target.value);
   renderAllPictures();
+  itemsPerPage.scrollIntoView();
 }
 
 //*****EXECUTION*****
