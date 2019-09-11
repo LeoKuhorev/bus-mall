@@ -3,7 +3,7 @@
 //*****GLOBAL VARIABLES*****
 //DOM
 var imageContainerEl = document.getElementById('image-container');
-var displayImgEl = document.getElementById('display-img');
+var itemsPerPageEl = document.getElementById('items-per-page');
 var votesLeftEl = document.getElementById('votes-left');
 var resultsEl = document.getElementById('results');
 
@@ -13,7 +13,7 @@ var IMAGE_NAMES_ARR = ['bag', 'banana', 'bathroom', 'boots', 'breakfast', 'bubbl
 //array with all image objects
 var allImagesArr = [];
 
-//array with last image indexes (length changes depending on displayImg value)
+//array with last image indexes (length changes depending on itemsPerPage value)
 var indexArr = [];
 
 //defining number of user votes
@@ -21,7 +21,7 @@ var VOTES = 25;
 var votesCount = 0;
 
 //items per page (default value - 6)
-var displayImg = 6;
+var itemsPerPage = 6;
 
 //*****FUNCTIONS*****
 //object constructor function
@@ -34,32 +34,32 @@ function Picture(name) {
   allImagesArr.push(this);
 }
 
-//function for generating random number 0 to max (max not inluded)
+//object ptototype for rendering each image to the page
+Picture.prototype.renderImage = function() {
+  var imageEl = document.createElement('img');
+  imageEl.src = this.src;
+  imageEl.alt = imageEl.title = this.name;
+  imageContainerEl.appendChild(imageEl);
+  this.views ++;
+  return imageEl;
+};
+
+//function for generating random number between 0 and max (max not inluded)
 function generateRandom (max) {
   return Math.floor(Math.random() * max);
 }
 
-//function for assigning unique random numbers
-function uniqueIndex(index) {
-  index = generateRandom(allImagesArr.length);
+//function for assigning unique random indexes
+function uniqueIndex() {
+  var index = generateRandom(allImagesArr.length);
   while (indexArr.includes(index)) {
     index = generateRandom(allImagesArr.length);
   }
-  while (indexArr.length >= displayImg * 2) {
+  while (indexArr.length >= itemsPerPage * 2) {
     indexArr.shift();
   }
   indexArr.push(index);
   return index;
-}
-
-//function for rendering each image to the page
-function renderImage(object) {
-  var imageEl = document.createElement('img');
-  imageEl.src = object.src;
-  imageEl.alt = imageEl.title = object.name;
-  imageContainerEl.appendChild(imageEl);
-  object.views ++;
-  return imageEl;
 }
 
 //function for rendering any element
@@ -74,8 +74,8 @@ function renderEl(element, parent, textContent) {
 
 //function for generating unique random pictures and rendering them to the page
 function generatePicture() {
-  var index = uniqueIndex(index);
-  var newEl = renderImage(allImagesArr[index]);
+  var index = uniqueIndex();
+  var newEl = allImagesArr[index].renderImage();
   return newEl;
 }
 
@@ -84,11 +84,13 @@ function renderAllPictures() {
   while(imageContainerEl.firstChild) {
     imageContainerEl.removeChild(imageContainerEl.firstChild);
   }
-  for (var i = 0; i < displayImg; i++) {
+  for (var i = 0; i < itemsPerPage; i++) {
     var newEl = generatePicture();
 
-    //if user out of votes apply class 'shake' when changing page layout
-    if (votesCount >= VOTES) {
+    //if user out of votes add class 'shake' to the image, otherwise - 'zoom'
+    if (votesCount < VOTES) {
+      newEl.className = 'zoom';
+    } else {
       newEl.className = 'shake';
     }
   }
@@ -99,18 +101,22 @@ function renderAllPictures() {
 
 //function for rendering list with items with votes
 function renderVotes() {
-  var ulEl = renderEl('ul',resultsEl);
+  resultsEl.style.padding = '10px';
+  renderEl('h4', resultsEl, 'HERE\'S THE LIST OF THE ITEMS YOU VOTED FOR:');
+  var ulEl = renderEl('ul', resultsEl);
   for (var i = 0; i < allImagesArr.length; i++) {
     if (allImagesArr[i].votes > 0) {
-      var string = `for  item ${allImagesArr[i].name} - ${allImagesArr[i].votes} votes out of ${allImagesArr[i].views} views`;
+      var string = `for  item ${allImagesArr[i].name} - ${allImagesArr[i].votes} vote(s) out of ${allImagesArr[i].views} view(s)`;
       renderEl('li', ulEl, string);
     }
   }
+  resultsEl.scrollIntoView();
 }
 
 //*****EVENT HANDLERS*****
 //function for counting number of votes
 function votesHandler(e) {
+  votesCount++;
   for (var i = 0; i < allImagesArr.length; i++) {
     if (e.target.title === allImagesArr[i].name) {
       allImagesArr[i].votes++;
@@ -121,23 +127,16 @@ function votesHandler(e) {
   renderAllPictures();
 
   //when user spends all votes - render list with results
-  votesCount++;
   votesLeftEl.textContent = VOTES-votesCount;
   if (votesCount >= VOTES) {
     imageContainerEl.removeEventListener('click', votesHandler);
     renderVotes();
-
-    //assign class 'shake' to all images
-    var imgEls = imageContainerEl.children;
-    for (i = 0; i < imgEls.length; i++) {
-      imgEls[i].className = 'shake';
-    }
   }
 }
 
 //function for changing items per page by user request
 function changeDisplayedPictures(e) {
-  displayImg = parseInt(e.target.value);
+  itemsPerPage = parseInt(e.target.value);
   renderAllPictures();
 }
 
@@ -152,4 +151,4 @@ renderAllPictures();
 
 //*****EVENT LISTENERS*****
 imageContainerEl.addEventListener('click', votesHandler);
-displayImgEl.addEventListener('change', changeDisplayedPictures);
+itemsPerPageEl.addEventListener('change', changeDisplayedPictures);
