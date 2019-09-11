@@ -107,16 +107,20 @@ function renderAllPictures() {
 
 //function for determining and rendering item with highest votes/view ratio
 function favoriteItem() {
-  var highestRank = 0;
+  var highestRatio = 0;
   var favoriteItemIndex;
   for (var i = 0; i < allImagesArr.length; i++) {
-    if (allImagesArr[i].votes > highestRank) {
-      highestRank = allImagesArr[i].votes;
+    var ratio = (allImagesArr[i].votes / allImagesArr[i].views) * 100;
+    console.log(allImagesArr[i].votes, allImagesArr[i].views, ratio);
+    if (ratio > highestRatio) {
+      highestRatio = ratio;
       favoriteItemIndex = i;
     }
   }
-  renderEl('h4', resultsEl, 'YOUR FAVORITE ITEM:');
+  renderEl('h4', resultsEl, 'YOUR FAVORITE ITEM: ' + capitalize(allImagesArr[favoriteItemIndex].name));
+  renderEl('h3', resultsEl, '(views to votes ratio: ' + highestRatio.toFixed(2) + '%)');
   var imgEl = allImagesArr[favoriteItemIndex].renderImage(resultsEl);
+  allImagesArr[favoriteItemIndex].views--;
   imgEl.className = 'shake';
 }
 
@@ -144,9 +148,6 @@ function votesHandler(e) {
     }
   }
 
-  //render new pictures
-  renderAllPictures();
-
   //when user spends all votes - render list with results
   votesLeftEl.textContent = VOTES-votesCount;
   if (votesCount >= VOTES) {
@@ -155,6 +156,8 @@ function votesHandler(e) {
     favoriteItem();
     renderVotes();
   }
+  //render new pictures
+  renderAllPictures();
 }
 
 //function for changing items per page by user request
