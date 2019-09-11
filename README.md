@@ -21,3 +21,5 @@ CREDITS:
 [array.includes() method](https://www.w3schools.com/jsref/jsref_includes_array.asp)
 
 [scrollIntoView() method](https://www.w3schools.com/jsref/met_element_scrollintoview.asp)
+
+[Capitalize first letter of a string](https://joshtronic.com/2016/02/14/how-to-capitalize-the-first-letter-in-a-string-in-javascript/)
