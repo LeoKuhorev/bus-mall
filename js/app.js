@@ -59,6 +59,7 @@ function renderImage(object) {
   imageEl.alt = imageEl.title = object.name;
   imageContainerEl.appendChild(imageEl);
   object.views ++;
+  return imageEl;
 }
 
 //function for rendering any element
@@ -74,7 +75,8 @@ function renderEl(element, parent, textContent) {
 //function for generating unique random pictures and rendering them to the page
 function generatePicture() {
   var index = uniqueIndex(index);
-  renderImage(allImagesArr[index]);
+  var newEl = renderImage(allImagesArr[index]);
+  return newEl;
 }
 
 //function for rendering all pictures
@@ -83,7 +85,12 @@ function renderAllPictures() {
     imageContainerEl.removeChild(imageContainerEl.firstChild);
   }
   for (var i = 0; i < displayImg; i++) {
-    generatePicture();
+    var newEl = generatePicture();
+
+    //if user out of votes apply class 'shake' when changing page layout
+    if (votesCount >= VOTES) {
+      newEl.className = 'shake';
+    }
   }
 
   console.table(indexArr);
