@@ -5,6 +5,7 @@
 var imageContainerEl = document.getElementById('image-container');
 var displayImgEl = document.getElementById('display-img');
 var votesLeftEl = document.getElementById('votes-left');
+var resultsEl = document.getElementById('results');
 
 //array with all image names
 var IMAGE_NAMES_ARR = ['bag', 'banana', 'bathroom', 'boots', 'breakfast', 'bubblegum', 'chair', 'cthulhu', 'dog-duck', 'dragon', 'pen', 'pet-sweep', 'scissors', 'shark', 'sweep', 'tauntaun', 'unicorn', 'usb', 'water-can', 'wine-glass'];
@@ -15,11 +16,11 @@ var allImagesArr = [];
 //array with last image indexes (length changes depending on displayImg value)
 var indexArr = [];
 
-//defining number of user selections
-var NUMBER_OF_SELECTIONS = 25;
-var selectionCount = 0;
+//defining number of user votes
+var VOTES = 25;
+var votesCount = 0;
 
-//how many pictures are displayed at a time (page loads with 3)
+//items per page (default value - 6)
 var displayImg = 6;
 
 //*****FUNCTIONS*****
@@ -38,7 +39,7 @@ function generateRandom (max) {
   return Math.floor(Math.random() * max);
 }
 
-//function for assigning 6 unique random numbers
+//function for assigning unique random numbers
 function uniqueIndex(index) {
   index = generateRandom(allImagesArr.length);
   while (indexArr.includes(index)) {
@@ -51,7 +52,7 @@ function uniqueIndex(index) {
   return index;
 }
 
-//function for rendering image to the page
+//function for rendering each image to the page
 function renderImage(object) {
   var imageEl = document.createElement('img');
   imageEl.src = object.src;
@@ -60,7 +61,17 @@ function renderImage(object) {
   object.views ++;
 }
 
-//function for generating 3 random pictures and rendering them to the page
+//function for rendering any element
+function renderEl(element, parent, textContent) {
+  var newEl = document.createElement(element);
+  if (textContent) {
+    newEl.textContent = textContent;
+  }
+  parent.appendChild(newEl);
+  return newEl;
+}
+
+//function for generating unique random pictures and rendering them to the page
 function generatePicture() {
   var index = uniqueIndex(index);
   renderImage(allImagesArr[index]);
@@ -79,24 +90,45 @@ function renderAllPictures() {
   // console.table(allImagesArr);
 }
 
+//function for rendering list with items with votes
+function renderVotes() {
+  var ulEl = renderEl('ul',resultsEl);
+  for (var i = 0; i < allImagesArr.length; i++) {
+    if (allImagesArr[i].votes > 0) {
+      var string = `for  item ${allImagesArr[i].name} - ${allImagesArr[i].votes} votes out of ${allImagesArr[i].views} views`;
+      renderEl('li', ulEl, string);
+    }
+  }
+}
+
 //*****EVENT HANDLERS*****
 //function for counting number of votes
-function votesCounter(e) {
+function votesHandler(e) {
   for (var i = 0; i < allImagesArr.length; i++) {
     if (e.target.title === allImagesArr[i].name) {
       allImagesArr[i].votes++;
     }
   }
 
+  //render new pictures
   renderAllPictures();
 
-  selectionCount++;
-  votesLeftEl.textContent = NUMBER_OF_SELECTIONS-selectionCount;
-  if (selectionCount >= NUMBER_OF_SELECTIONS) {
-    imageContainerEl.removeEventListener('click', votesCounter);
+  //when user spends all votes - render list with results
+  votesCount++;
+  votesLeftEl.textContent = VOTES-votesCount;
+  if (votesCount >= VOTES) {
+    imageContainerEl.removeEventListener('click', votesHandler);
+    renderVotes();
+
+    //assign class 'shake' to all images
+    var imgEls = imageContainerEl.children;
+    for (i = 0; i < imgEls.length; i++) {
+      imgEls[i].className = 'shake';
+    }
   }
 }
 
+//function for changing items per page by user request
 function changeDisplayedPictures(e) {
   displayImg = parseInt(e.target.value);
   renderAllPictures();
@@ -108,9 +140,9 @@ for (var i = 0; i < IMAGE_NAMES_ARR.length; i++) {
   new Picture(IMAGE_NAMES_ARR[i]);
 }
 
-//rendering 3 first pictures
+//rendering initial pictures
 renderAllPictures();
 
 //*****EVENT LISTENERS*****
-imageContainerEl.addEventListener('click', votesCounter);
+imageContainerEl.addEventListener('click', votesHandler);
 displayImgEl.addEventListener('change', changeDisplayedPictures);
