@@ -16,11 +16,17 @@ var allImagesArr = [];
 //array with last 6 image indexes
 var indexArr = [];
 
+//defining number of user selections
+var NUMBER_OF_SELECTIONS = 25;
+var selectionCount = 0;
+
 //*****FUNCTIONS*****
 //object constructor function
 function Picture(name) {
   this.src = `img/${name}.jpg`;
   this.name = name;
+  this.votes = 0;
+  this.views = 0;
 
   allImagesArr.push(this);
 }
@@ -33,10 +39,8 @@ function generateRandom (max) {
 //function for assigning 6 unique random numbers
 function uniqueIndex(index) {
   index = generateRandom(allImagesArr.length);
-  for (var i = 0; i < indexArr.length; i++) {
-    while (index === indexArr[i]) {
-      index = generateRandom(allImagesArr.length);
-    }
+  while (indexArr.includes(index)) {
+    index = generateRandom(allImagesArr.length);
   }
   if (indexArr.length >= 6) {
     indexArr.shift();
@@ -48,8 +52,8 @@ function uniqueIndex(index) {
 //function for rendering image to the page
 function renderImage(image, object) {
   image.src = object.src;
-  image.alt = object.name;
-  image.title = object.name;
+  image.alt = image.title = object.name;
+  object.views ++;
 }
 
 //function for generating 3 random pictures and rendering them to the page
@@ -65,6 +69,24 @@ function renderAllPictures() {
   generatePicture(img3El);
 
   console.table(indexArr);
+  console.table(allImagesArr);
+}
+
+//*****EVENT HANDLERS*****
+//function for counting number of votes
+function votesCounter(e) {
+  for (var i = 0; i < allImagesArr.length; i++) {
+    if (e.target.title === allImagesArr[i].name) {
+      allImagesArr[i].votes++;
+    }
+  }
+  renderAllPictures();
+
+  selectionCount++;
+  console.log('votes left', NUMBER_OF_SELECTIONS-selectionCount);
+  if (selectionCount >= NUMBER_OF_SELECTIONS) {
+    imageContainerEl.removeEventListener('click', votesCounter);
+  }
 }
 
 //*****EXECUTION*****
@@ -77,4 +99,4 @@ for (var i = 0; i < IMAGE_NAMES_ARR.length; i++) {
 renderAllPictures();
 
 //*****EVENT LISTENERS*****
-imageContainerEl.addEventListener('click', renderAllPictures);
+imageContainerEl.addEventListener('click', votesCounter);
