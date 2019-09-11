@@ -4,6 +4,7 @@
 //DOM
 var imageContainerEl = document.getElementById('image-container');
 var displayImgEl = document.getElementById('display-img');
+var votesLeftEl = document.getElementById('votes-left');
 
 //array with all image names
 var IMAGE_NAMES_ARR = ['bag', 'banana', 'bathroom', 'boots', 'breakfast', 'bubblegum', 'chair', 'cthulhu', 'dog-duck', 'dragon', 'pen', 'pet-sweep', 'scissors', 'shark', 'sweep', 'tauntaun', 'unicorn', 'usb', 'water-can', 'wine-glass'];
@@ -90,7 +91,7 @@ function votesCounter(e) {
   renderAllPictures();
 
   selectionCount++;
-  console.log('votes left', NUMBER_OF_SELECTIONS-selectionCount);
+  votesLeftEl.textContent = NUMBER_OF_SELECTIONS-selectionCount;
   if (selectionCount >= NUMBER_OF_SELECTIONS) {
     imageContainerEl.removeEventListener('click', votesCounter);
   }
