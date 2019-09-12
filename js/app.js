@@ -3,10 +3,10 @@
 //*****GLOBAL VARIABLES*****
 //DOM
 var imageContainerEl = document.getElementById('image-container');
-// var favImageContainerEl = document.getElementById('favimage-container');
 var itemsPerPageEl = document.getElementById('items-per-page');
 var votesLeftEl = document.getElementById('votes-left');
 var resultsEl = document.getElementById('results');
+var progressBarEl = document.getElementById('progress-bar');
 
 //array with all image names
 var IMAGE_NAMES_ARR = ['R2D2-bag', 'banana-cutter', 'bathroom-stand', 'rainboots-with-holes', 'breakfast-maker', 'meatball-flavored-bubblegum', 'convex-chair', 'cthulhu-toy', 'duck-styled-dog-muzzle', 'dragon-meat-can', 'cutlery-pen-tips', 'pet-sweep', 'pizza-scissors', 'shark-sleeping-bag', 'sweep-crawlers', 'tauntaun-sleeping-bag', 'unicorn-meat-can', 'usb-tentacle', 'water-can', 'wine-glass'];
@@ -45,20 +45,20 @@ Picture.prototype.renderImage = function(parent) {
   return imageEl;
 };
 
-//object ptototype for calculating each image rating
+//object ptototype for calculating each image rating (votes to views ratio)
 Picture.prototype.rating = function() {
   return (this.votes / this.views * 100).toFixed(2);
 };
 
-//function for generating random number between 0 and max (max not inluded)
+//function for generating random number between 0 and max (max not included)
 function generateRandom(max) {
   return Math.floor(Math.random() * max);
 }
 
-//function for capitalizing the first letter of a string and replacing dashes with spaces
+//function for capitalizing the first letter of a string and replacing all dashes with spaces
 function capitalize(string) {
-  var capital = string.charAt(0).toUpperCase() + string.substring(1);
-  return capital.split('-').join(' ');
+  var capitalize = string.charAt(0).toUpperCase() + string.substring(1);
+  return capitalize.split('-').join(' ');
 }
 
 //function for assigning unique random indexes
@@ -106,17 +106,32 @@ function renderAllPictures() {
       newEl.className = 'shake';
     }
   }
-
   console.table(indexArr);
-  // console.table(allImagesArr);
 }
 
-//function for determining and rendering item with highest votes/view ratio
+//function for rendering progress bar
+function renderProgressBar() {
+  var string = '';
+  var votesLeft =  VOTES-votesCount;
+  for (var i = 0; i < votesLeft; i++) {
+    string += '|';
+  }
+  progressBarEl.textContent = string;
+  if (votesLeft > 0.5 * VOTES) {
+    progressBarEl.className = 'green';
+  } else if (votesLeft > 0.1 * VOTES) {
+    progressBarEl.className = 'yellow';
+  } else {
+    progressBarEl.className = 'red';
+  }
+  votesLeftEl.textContent = votesLeft;
+}
+
+//function for rendering items with highest rating
 function favoriteItem() {
 
   //get the maximum value of rating property for every object in array and return it with 2 decimals
   var maxRating = Math.max.apply(Math, allImagesArr.map(function(object) { return object.rating(); })).toFixed(2);
-  // console.log(maxRating);
 
   renderEl('h4', resultsEl, 'YOUR FAVORITE ITEM: ');
   var favImageContainerEl = renderEl('div', resultsEl);
@@ -159,15 +174,14 @@ function votesHandler(e) {
   }
 
   //when user spends all votes - render list with results
-  votesLeftEl.textContent = VOTES-votesCount;
   if (votesCount >= VOTES) {
     imageContainerEl.removeEventListener('click', votesHandler);
-    votesLeftEl.className = 'red';
     favoriteItem();
     renderVotes();
   }
   //render new pictures
   renderAllPictures();
+  renderProgressBar();
 }
 
 //function for changing items per page by user request
@@ -185,6 +199,7 @@ for (var i = 0; i < IMAGE_NAMES_ARR.length; i++) {
 
 //rendering initial pictures
 renderAllPictures();
+renderProgressBar();
 
 //*****EVENT LISTENERS*****
 imageContainerEl.addEventListener('click', votesHandler);

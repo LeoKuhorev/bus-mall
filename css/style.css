@@ -63,21 +63,6 @@ h1 {
   padding-bottom: 20px;
   line-height: 31px;
 }
-#votes-left {
-  font-weight: 900;
-}
-.dropdown-wrapper * {
-  float: left;
-}
-.dropdown-wrapper select {
-  font-family: 'Poiret One', cursive;
-  font-size: 18px;
-  font-weight: 900;
-  padding: 3px 10px;
-  border-radius: 5px;
-  outline: none;
-  margin-right: 15px;
-}
 #image-container {
   clear: both;
   display: flex;
@@ -96,6 +81,26 @@ h1 {
   box-shadow: 1px 1px 3px 0px rgba(0,0,0,0.3);
   cursor: pointer;
   border-radius: 5px;
+}
+#progress-bar:first-child {
+  text-align: right;
+  font-weight: 900;
+  padding-bottom: 10px;
+}
+#votes-left {
+  font-weight: 900;
+}
+.dropdown-wrapper * {
+  float: left;
+}
+.dropdown-wrapper select {
+  font-family: 'Poiret One', cursive;
+  font-size: 18px;
+  font-weight: 900;
+  padding: 3px 10px;
+  border-radius: 5px;
+  outline: none;
+  margin-right: 15px;
 }
 .zoom:hover, .zoom:active {
   padding: 0 !important;
@@ -147,6 +152,12 @@ h1 {
 /* CLASSES */
 .red {
   color: red;
+}
+.yellow {
+  color: rgb(255, 208, 0);
+}
+.green {
+  color: rgb(3, 167, 3);
 }
 
 /* ANIMATION */
