@@ -35,3 +35,5 @@ CREDITS:
 [Capitalize first letter of a string](https://joshtronic.com/2016/02/14/how-to-capitalize-the-first-letter-in-a-string-in-javascript/)
 
 [Replace all occurences of a string ](https://stackoverflow.com/questions/1144783/how-to-replace-all-occurrences-of-a-string)
+
+[Remove space between html elements](https://stackoverflow.com/questions/5078239/how-do-i-remove-the-space-between-inline-block-elements)

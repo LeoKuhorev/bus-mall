@@ -7,6 +7,7 @@ var itemsPerPageEl = document.getElementById('items-per-page');
 var votesLeftEl = document.getElementById('votes-left');
 var resultsEl = document.getElementById('results');
 var progressBarEl = document.getElementById('progress-bar');
+var progressBarEmptyEl = document.getElementById('progress-bar-empty');
 
 //array with all image names
 var IMAGE_NAMES_ARR = ['R2D2-bag', 'banana-cutter', 'bathroom-stand', 'rainboots-with-holes', 'breakfast-maker', 'meatball-flavored-bubblegum', 'convex-chair', 'cthulhu-toy', 'duck-styled-dog-muzzle', 'dragon-meat-can', 'cutlery-pen-tips', 'pet-sweep', 'pizza-scissors', 'shark-sleeping-bag', 'sweep-crawlers', 'tauntaun-sleeping-bag', 'unicorn-meat-can', 'usb-tentacle', 'water-can', 'wine-glass'];
@@ -112,11 +113,16 @@ function renderAllPictures() {
 //function for rendering progress bar
 function renderProgressBar() {
   var string = '';
+  var stringEmpty = '';
   var votesLeft =  VOTES-votesCount;
   for (var i = 0; i < votesLeft; i++) {
     string += '|';
   }
+  for (i = 0; i < votesCount; i++) {
+    stringEmpty += '|';
+  }
   progressBarEl.textContent = string;
+  progressBarEmptyEl.textContent = stringEmpty;
   if (votesLeft > 0.5 * VOTES) {
     progressBarEl.className = 'green';
   } else if (votesLeft > 0.1 * VOTES) {

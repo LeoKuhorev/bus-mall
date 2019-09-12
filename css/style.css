@@ -82,8 +82,13 @@ h1 {
   cursor: pointer;
   border-radius: 5px;
 }
-#progress-bar:first-child {
+.progress-bar-wrapper {
   text-align: right;
+  font-size: 0;
+}
+.progress-bar-wrapper p {
+  display: inline;
+  font-size: 31px;
   font-weight: 900;
   padding-bottom: 10px;
 }
@@ -158,6 +163,9 @@ h1 {
 }
 .green {
   color: rgb(3, 167, 3);
+}
+.gray {
+  color: rgb(233, 233, 233);
 }
 
 /* ANIMATION */
