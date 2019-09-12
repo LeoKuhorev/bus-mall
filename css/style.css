@@ -1,5 +1,5 @@
 body {
-  width: 1120px;
+  width: 1040px;
   margin: auto;
   background: rgb(206, 223, 247);
 }
@@ -88,8 +88,8 @@ h1 {
   padding-bottom: 30px;
 }
 #image-container img, #results img {
-  width: 300px;
-  height: 300px;
+  width: 270px;
+  height: 270px;
   padding: 25px;
   margin: 10px 5px;
   background: #fffffa;
@@ -119,14 +119,20 @@ h1 {
 #results h3 {
   font-size: 30px;
   font-weight: 500;
-  margin-bottom: 20px;
+  margin: 5px;
 }
-#results img {
-  display: block;
+#favimage-container {
+  display: flex;
   margin: 10px  auto;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-content: space-between;
+  padding-bottom: 30px;
+
 }
 #results ul {
-  width: 400px;
+  width: 800px;
   margin: 10px auto;
   border-radius: 5px;
   background: rgba(255, 255, 255, 0.8);
