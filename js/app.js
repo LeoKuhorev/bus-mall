@@ -27,7 +27,7 @@ var itemsPerPage = 6;
 
 //*****FUNCTIONS*****
 //object constructor function
-function Picture(name) {
+function Item(name) {
   this.src = `img/${name}.jpg`;
   this.name = name;
   this.votes = 0;
@@ -37,7 +37,7 @@ function Picture(name) {
 }
 
 //object ptototype for rendering each image to the page
-Picture.prototype.renderImage = function(parent) {
+Item.prototype.renderImage = function(parent) {
   var imageEl = document.createElement('img');
   imageEl.src = this.src;
   imageEl.alt = imageEl.title = capitalize(this.name);
@@ -47,7 +47,7 @@ Picture.prototype.renderImage = function(parent) {
 };
 
 //object ptototype for calculating each image rating (votes to views ratio)
-Picture.prototype.rating = function() {
+Item.prototype.rating = function() {
   return (this.votes / this.views * 100).toFixed(2);
 };
 
@@ -114,15 +114,24 @@ function renderAllPictures() {
 function renderProgressBar() {
   var string = '';
   var stringEmpty = '';
-  var votesLeft =  VOTES-votesCount;
+  var votesLeft =  VOTES - votesCount;
+
+  //draw '|' for every vote that user has left (will get green, yellow and red later)
   for (var i = 0; i < votesLeft; i++) {
     string += '|';
   }
+
+  //draw '|' for every vote user spent (will be gray)
   for (i = 0; i < votesCount; i++) {
     stringEmpty += '|';
   }
+
+  //render number of votes left and progress bar to the page
+  votesLeftEl.textContent = votesLeft;
   progressBarEl.textContent = string;
   progressBarEmptyEl.textContent = stringEmpty;
+
+  //assign colors to the votes left (over 50% - green, 10%..50% - yellow, under 10% - red)
   if (votesLeft > 0.5 * VOTES) {
     progressBarEl.className = 'green';
   } else if (votesLeft > 0.1 * VOTES) {
@@ -130,7 +139,6 @@ function renderProgressBar() {
   } else {
     progressBarEl.className = 'red';
   }
-  votesLeftEl.textContent = votesLeft;
 }
 
 //function for rendering items with highest rating
@@ -139,10 +147,12 @@ function favoriteItem() {
   //get the maximum value of rating property for every object in array and return it with 2 decimals
   var maxRating = Math.max.apply(Math, allImagesArr.map(function(object) { return object.rating(); })).toFixed(2);
 
+  //render heading and image container
   renderEl('h4', resultsEl, 'YOUR FAVORITE ITEM: ');
   var favImageContainerEl = renderEl('div', resultsEl);
   favImageContainerEl.id = 'favimage-container';
 
+  //check how many pictures have the highest rating and render those to the page with its name and rating
   for (var i = 0; i < allImagesArr.length; i++) {
     if (allImagesArr[i].rating() === maxRating) {
       var divEl = renderEl('div', favImageContainerEl);
@@ -185,7 +195,8 @@ function votesHandler(e) {
     favoriteItem();
     renderVotes();
   }
-  //render new pictures
+
+  //render new pictures and progress bar
   renderAllPictures();
   renderProgressBar();
 }
@@ -194,16 +205,16 @@ function votesHandler(e) {
 function changeDisplayedPictures(e) {
   itemsPerPage = parseInt(e.target.value);
   renderAllPictures();
-  itemsPerPage.scrollIntoView();
+  imageContainerEl.scrollIntoView();
 }
 
 //*****EXECUTION*****
 //creating object instances for all pictures
 for (var i = 0; i < IMAGE_NAMES_ARR.length; i++) {
-  new Picture(IMAGE_NAMES_ARR[i]);
+  new Item(IMAGE_NAMES_ARR[i]);
 }
 
-//rendering initial pictures
+//rendering initial pictures and progress bar
 renderAllPictures();
 renderProgressBar();
 

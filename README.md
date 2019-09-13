@@ -36,4 +36,4 @@ CREDITS:
 
 [Replace all occurences of a string ](https://stackoverflow.com/questions/1144783/how-to-replace-all-occurrences-of-a-string)
 
-[Remove space between html elements](https://stackoverflow.com/questions/5078239/how-do-i-remove-the-space-between-inline-block-elements)
+[Remove space between html inline elements](https://stackoverflow.com/questions/5078239/how-do-i-remove-the-space-between-inline-block-elements)
