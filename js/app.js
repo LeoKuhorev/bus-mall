@@ -194,7 +194,7 @@ function votesHandler(e) {
 function changeDisplayedPictures(e) {
   itemsPerPage = parseInt(e.target.value);
   renderAllPictures();
-  itemsPerPage.scrollIntoView();
+  imageContainerEl.scrollIntoView();
 }
 
 //*****EXECUTION*****
