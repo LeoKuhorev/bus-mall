@@ -18,6 +18,9 @@ var allImagesArr = [];
 //array with last image indexes (length changes depending on itemsPerPage value)
 var indexArr = [];
 
+//array with indexes of items with votes greater than 0
+var itemsWithVotesArr = [];
+
 //defining number of user votes
 var VOTES = 25;
 var votesCount = 0;
@@ -48,7 +51,11 @@ Item.prototype.renderImage = function(parent) {
 
 //object ptototype for calculating each image rating (votes to views ratio)
 Item.prototype.rating = function() {
-  return (this.votes / this.views * 100).toFixed(2);
+  if (this.views > 0) {
+    return (this.votes / this.views * 100).toFixed(2);
+  } else {
+    return 0;
+  }
 };
 
 //function for generating random number between 0 and max (max not included)
@@ -65,11 +72,11 @@ function capitalize(string) {
 //function for assigning unique random indexes
 function uniqueIndex() {
   var index = generateRandom(allImagesArr.length);
-  while (indexArr.includes(index)) {
-    index = generateRandom(allImagesArr.length);
-  }
   while (indexArr.length >= itemsPerPage * 2) {
     indexArr.shift();
+  }
+  while (indexArr.includes(index)) {
+    index = generateRandom(allImagesArr.length);
   }
   indexArr.push(index);
   return index;
@@ -146,13 +153,17 @@ function favoriteItem() {
 
   //get the maximum value of rating property for every object in array and return it with 2 decimals
   var maxRating = Math.max.apply(Math, allImagesArr.map(function(object) { return object.rating(); })).toFixed(2);
+  console.log(maxRating);
+
+  itemsWithVotesArr.length = 0;
 
   //render heading and image container
   renderEl('h4', resultsEl, 'YOUR FAVORITE ITEM: ');
   var favImageContainerEl = renderEl('div', resultsEl);
   favImageContainerEl.id = 'favimage-container';
 
-  //check how many pictures have the highest rating and render those to the page with its name and rating
+
+  //check how many pictures have the highest rating and render those to the page with their names and rating
   for (var i = 0; i < allImagesArr.length; i++) {
     if (allImagesArr[i].rating() === maxRating) {
       var divEl = renderEl('div', favImageContainerEl);
@@ -162,7 +173,118 @@ function favoriteItem() {
       allImagesArr[i].views--;
       renderEl('h3', divEl, '(rating: ' + allImagesArr[i].rating() + '%)');
     }
+
+    //while we're in the loop push all items with votes into itemsWithVotesArr
+    if (allImagesArr[i].votes > 0) {
+      itemsWithVotesArr.push(i);
+    }
   }
+  resultsEl.scrollIntoView();
+}
+
+//function for rendering chart to the page
+function renderChart() {
+
+  //getting the names, views and votes for items with votes only for chart settings
+  var namesArr = [], votesArr = [], viewsArr = [], ratingArr = [];
+  for (var i = 0; i < itemsWithVotesArr.length; i++) {
+    namesArr.push(capitalize(allImagesArr[itemsWithVotesArr[i]].name));
+    votesArr.push(allImagesArr[itemsWithVotesArr[i]].votes);
+    viewsArr.push(allImagesArr[itemsWithVotesArr[i]].views);
+    ratingArr.push(allImagesArr[itemsWithVotesArr[i]].rating());
+  }
+
+  //render <canvas> element to the page and build the chart
+  var divEl = renderEl('div', resultsEl);
+  renderEl('h4', divEl, 'PLEASE SEE THE ITEMS YOU PICKED:');
+  divEl.className = 'chart-container';
+  var chartEl = renderEl('canvas', divEl);
+  chartEl.getContext('2d');
+
+  // eslint-disable-next-line no-undef
+  Chart.defaults.global.defaultFontFamily = 'Poiret One';
+  // eslint-disable-next-line no-undef
+  new Chart(chartEl, {
+    type: 'bar',
+    data: {
+      labels: namesArr,
+      datasets: [
+        {
+          type: 'line',
+          label: 'rating',
+          borderColor: 'rgba(97, 14, 255, 1.0)',
+          borderWidth: 2,
+          yAxisID: 'rating',
+          data: ratingArr
+        },
+        {
+          label: 'votes',
+          backgroundColor: 'rgba(255, 0, 0, 0.6)',
+          borderColor: 'rgba(255, 0, 0, 1.0)',
+          borderWidth: 1,
+          yAxisID: 'views',
+          data: votesArr
+        },
+        {
+          label: 'views',
+          backgroundColor: 'rgba(97, 198, 255, 0.5)',
+          borderColor: 'rgba(97, 198, 255, 1.0)',
+          borderWidth: 1,
+          yAxisID: 'views',
+          data: viewsArr
+        }
+      ]
+    },
+
+    options: {
+      legend: {
+        display: false
+      },
+      scales: {
+        yAxes: [{
+          id: 'views',
+          position: 'left',
+          stacked: false,
+          ticks: {
+            beginAtZero: true,
+            fontSize: 18,
+            max: Math.max.apply(Math, viewsArr) + 1
+          },
+          scaleLabel: {
+            display: true,
+            labelString: 'views/votes',
+            fontSize: 24
+          }
+        },
+        {
+          id: 'rating',
+          position: 'right',
+          stacked: false,
+          ticks: {
+            beginAtZero: true,
+            fontSize: 18,
+            callback: function(value) {
+              return value + '%';
+            }
+          },
+          scaleLabel: {
+            display: true,
+            labelString: 'rating',
+            fontSize: 24
+          },
+          gridLines: {
+            display: false,
+          }
+        }],
+        xAxes: [{
+          stacked: true,
+          ticks: {
+            fontSize: 18
+          }
+        }]
+      }
+    }
+  });
 }
 
 //function for rendering list with items
@@ -170,11 +292,10 @@ function renderVotes() {
   resultsEl.style.paddingBottom = '30px';
   renderEl('h4', resultsEl, 'HERE\'S THE LIST OF ITEMS YOU VOTED FOR:');
   var ulEl = renderEl('ul', resultsEl);
-  for (var i = 0; i < allImagesArr.length; i++) {
-    if (allImagesArr[i].votes > 0) {
-      var string = `${capitalize(allImagesArr[i].name)}: ${allImagesArr[i].votes} vote(s) / ${allImagesArr[i].views} view(s) (rating: ${allImagesArr[i].rating()}%)`;
-      renderEl('li', ulEl, string);
-    }
+
+  for (var i = 0; i < itemsWithVotesArr.length; i++) {
+    var string = `${capitalize(allImagesArr[itemsWithVotesArr[i]].name)}: ${allImagesArr[itemsWithVotesArr[i]].votes} vote(s) / ${allImagesArr[itemsWithVotesArr[i]].views} view(s) (rating: ${allImagesArr[itemsWithVotesArr[i]].rating()}%)`;
+    renderEl('li', ulEl, string);
   }
   resultsEl.scrollIntoView();
 }
@@ -193,6 +314,7 @@ function votesHandler(e) {
   if (votesCount >= VOTES) {
     imageContainerEl.removeEventListener('click', votesHandler);
     favoriteItem();
+    renderChart();
     renderVotes();
   }
 

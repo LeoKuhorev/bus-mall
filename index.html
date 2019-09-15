@@ -8,6 +8,7 @@
     <link rel="icon" href="https://img.icons8.com/cute-clipart/64/000000/bus.png" type="image/x-icon">
     <link href="https://fonts.googleapis.com/css?family=Poiret+One|Racing+Sans+One&display=swap" rel="stylesheet">
   </head>
+
   <body>
     <header>
       <div id="logo">
@@ -18,15 +19,20 @@
         <img class="spin" id="wheel-3" src="img/logo_wheel.png" alt="animated bus wheel" />
       </div> 
     </header>
+
     <main>
       <div id="image-wrapper">
         <h4>PLEASE CLICK ON THE MOST APPEALING ITEM</h4>
+        
+        <!-- In this section item images will be rendered by JS -->
         <section id="image-container">
         </section>
+
         <div class="progress-bar-wrapper">
           <p id="progress-bar-empty" class="gray"></p>
           <p id="progress-bar"></p>
         </div>
+
         <div class="dropdown-wrapper">
           <select id="items-per-page">
             <option label="3" value="3"></option>
@@ -38,13 +44,17 @@
         <p>VOTES LEFT: <span id="votes-left">25</span></p>
         <!-- <button>START OVER</button> -->
       </div>
+
+      <!-- In this section results will be rendered by JS -->
       <section id="results">
-      
       </section>
     </main>
+
     <footer>
       <!-- <p>FOOTER-PLACEHOLDER</p> -->
     </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.min.js"></script>
     <script type="text/javascript" src="js/app.js"></script>
   </body>
 </html>

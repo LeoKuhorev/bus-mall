@@ -140,6 +140,10 @@ h1 {
   align-content: space-between;
   padding-bottom: 30px;
 }
+.chart-container {
+  width: 90%;
+  margin: 10px auto;
+}
 #results ul {
   width: 800px;
   margin: 10px auto;
