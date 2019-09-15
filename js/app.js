@@ -171,6 +171,7 @@ function favoriteItem() {
       var imgEl = allImagesArr[i].renderImage(divEl);
       imgEl.className = 'shake';
       allImagesArr[i].views--;
+      renderEl('h3', divEl, 'views: ' + allImagesArr[i].views + ', votes: ' + allImagesArr[i].votes);
       renderEl('h3', divEl, '(rating: ' + allImagesArr[i].rating() + '%)');
     }
 
@@ -212,7 +213,9 @@ function renderChart() {
         {
           type: 'line',
           label: 'rating',
+          backgroundColor: 'rgba(97, 14, 255, 1.0)',
           borderColor: 'rgba(97, 14, 255, 1.0)',
+          fill: false,
           borderWidth: 2,
           yAxisID: 'rating',
           data: ratingArr
@@ -222,7 +225,7 @@ function renderChart() {
           backgroundColor: 'rgba(255, 0, 0, 0.6)',
           borderColor: 'rgba(255, 0, 0, 1.0)',
           borderWidth: 1,
-          yAxisID: 'views',
+          yAxisID: 'views/votes',
           data: votesArr
         },
         {
@@ -230,19 +233,32 @@ function renderChart() {
           backgroundColor: 'rgba(97, 198, 255, 0.5)',
           borderColor: 'rgba(97, 198, 255, 1.0)',
           borderWidth: 1,
-          yAxisID: 'views',
+          yAxisID: 'views/votes',
           data: viewsArr
         }
       ]
     },
 
     options: {
+      layout: {
+        padding: {
+          left: 0,
+          right: 0,
+          top: 50,
+          bottom: 0
+        }
+      },
       legend: {
         display: false
       },
+      tooltips: {
+        mode: 'label',
+        titleFontSize: 18,
+        bodyFontSize: 16
+      },
       scales: {
         yAxes: [{
-          id: 'views',
+          id: 'views/votes',
           position: 'left',
           stacked: false,
           ticks: {
@@ -252,8 +268,9 @@ function renderChart() {
           },
           scaleLabel: {
             display: true,
-            labelString: 'views/votes',
-            fontSize: 24
+            labelString: 'VIEWS/VOTES',
+            fontSize: 24,
+            fontStyle: 'bold'
           }
         },
         {
@@ -269,8 +286,9 @@ function renderChart() {
           },
           scaleLabel: {
             display: true,
-            labelString: 'rating',
-            fontSize: 24
+            labelString: 'RATING',
+            fontSize: 24,
+            fontStyle: 'bold'
           },
           gridLines: {
             display: false,
@@ -285,19 +303,29 @@ function renderChart() {
       }
     }
   });
+
+  //render button for showing list results
+  var buttonEl = renderEl('button', divEl, 'DISPLAY LIST');
+  buttonEl.className = 'results-button';
+  buttonEl.addEventListener('click', renderVotes);
 }
 
 //function for rendering list with items
 function renderVotes() {
+
+  //removing button element
+  var buttonEl = document.getElementsByClassName('results-button')[0];
+  buttonEl.remove();
+
   resultsEl.style.paddingBottom = '30px';
-  renderEl('h4', resultsEl, 'HERE\'S THE LIST OF ITEMS YOU VOTED FOR:');
+  var h4El = renderEl('h4', resultsEl, 'HERE\'S THE LIST OF ITEMS YOU VOTED FOR:');
   var ulEl = renderEl('ul', resultsEl);
 
   for (var i = 0; i < itemsWithVotesArr.length; i++) {
     var string = `${capitalize(allImagesArr[itemsWithVotesArr[i]].name)}: ${allImagesArr[itemsWithVotesArr[i]].votes} vote(s) / ${allImagesArr[itemsWithVotesArr[i]].views} view(s) (rating: ${allImagesArr[itemsWithVotesArr[i]].rating()}%)`;
     renderEl('li', ulEl, string);
   }
-  resultsEl.scrollIntoView();
+  h4El.scrollIntoView();
 }
 
 //*****EVENT HANDLERS*****
@@ -315,7 +343,6 @@ function votesHandler(e) {
     imageContainerEl.removeEventListener('click', votesHandler);
     favoriteItem();
     renderChart();
-    renderVotes();
   }
 
   //render new pictures and progress bar
