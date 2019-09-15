@@ -173,11 +173,11 @@ function favoriteItem() {
       allImagesArr[i].views--;
       renderEl('h3', divEl, 'views: ' + allImagesArr[i].views + ', votes: ' + allImagesArr[i].votes);
       renderEl('h3', divEl, '(rating: ' + allImagesArr[i].rating() + '%)');
-    }
 
-    //while we're in the loop push all items with votes into itemsWithVotesArr
-    if (allImagesArr[i].votes > 0) {
-      itemsWithVotesArr.push(i);
+      //create an array with items with votes and specify favorite items
+      itemsWithVotesArr.push({index: i, favorite: true});
+    } else if (allImagesArr[i].votes > 0) {
+      itemsWithVotesArr.push({index: i, favorite: false});
     }
   }
   resultsEl.scrollIntoView();
@@ -186,13 +186,40 @@ function favoriteItem() {
 //function for rendering chart to the page
 function renderChart() {
 
-  //getting the names, views and votes for items with votes only for chart settings
-  var namesArr = [], votesArr = [], viewsArr = [], ratingArr = [];
+  //creating object literal with chart settings
+  var chartSetting = {
+    namesArr: [],
+    votesArr: [],
+    viewsArr: [],
+    ratingArr: [],
+    colorsViewsArr: [],
+    colorsVotesArr: [],
+    borderViewsArr: [],
+    borderVotesArr: [],
+    dotColorArr: []
+  };
+
+  //for all elements with votes create chart settings
   for (var i = 0; i < itemsWithVotesArr.length; i++) {
-    namesArr.push(capitalize(allImagesArr[itemsWithVotesArr[i]].name));
-    votesArr.push(allImagesArr[itemsWithVotesArr[i]].votes);
-    viewsArr.push(allImagesArr[itemsWithVotesArr[i]].views);
-    ratingArr.push(allImagesArr[itemsWithVotesArr[i]].rating());
+    chartSetting.namesArr.push(capitalize(allImagesArr[itemsWithVotesArr[i].index].name));
+    chartSetting.votesArr.push(allImagesArr[itemsWithVotesArr[i].index].votes);
+    chartSetting.viewsArr.push(allImagesArr[itemsWithVotesArr[i].index].views);
+    chartSetting.ratingArr.push(allImagesArr[itemsWithVotesArr[i].index].rating());
+
+    //assign different color for favorite items
+    if (itemsWithVotesArr[i].favorite) {
+      chartSetting.colorsViewsArr.push('rgba(4, 144, 224, 0.7)');
+      chartSetting.colorsVotesArr.push('rgba(255, 0, 0, 0.9)');
+      chartSetting.borderViewsArr.push('rgba(28, 135, 197, 1.0)');
+      chartSetting.borderVotesArr.push('rgba(138, 5, 5, 1.0)');
+      chartSetting.dotColorArr.push('rgba(255, 0, 0, 1.0)');
+    } else {
+      chartSetting.colorsViewsArr.push('rgba(97, 198, 255, 0.5)');
+      chartSetting.colorsVotesArr.push('rgba(255, 0, 0, 0.6)');
+      chartSetting.borderViewsArr.push('rgba(97, 198, 255, 1.0)');
+      chartSetting.borderVotesArr.push('rgba(255, 0, 0, 1.0)');
+      chartSetting.dotColorArr.push('rgba(97, 14, 255, 1.0)');
+    }
   }
 
   //render <canvas> element to the page and build the chart
@@ -208,46 +235,39 @@ function renderChart() {
   new Chart(chartEl, {
     type: 'bar',
     data: {
-      labels: namesArr,
+      labels: chartSetting.namesArr,
       datasets: [
         {
           type: 'line',
           label: 'rating',
           backgroundColor: 'rgba(97, 14, 255, 1.0)',
-          borderColor: 'rgba(97, 14, 255, 1.0)',
+          borderColor: chartSetting.dotColorArr,
           fill: false,
           borderWidth: 2,
           yAxisID: 'rating',
-          data: ratingArr
+          data: chartSetting.ratingArr
         },
         {
           label: 'votes',
-          backgroundColor: 'rgba(255, 0, 0, 0.6)',
-          borderColor: 'rgba(255, 0, 0, 1.0)',
+          backgroundColor: chartSetting.colorsVotesArr,
+          borderColor: chartSetting.borderVotesArr,
           borderWidth: 1,
           yAxisID: 'views/votes',
-          data: votesArr
+          data: chartSetting.votesArr
         },
         {
           label: 'views',
-          backgroundColor: 'rgba(97, 198, 255, 0.5)',
-          borderColor: 'rgba(97, 198, 255, 1.0)',
+          backgroundColor: chartSetting.colorsViewsArr,
+          borderColor: chartSetting.borderViewsArr,
           borderWidth: 1,
           yAxisID: 'views/votes',
-          data: viewsArr
+          data: chartSetting.viewsArr
         }
       ]
     },
 
+    //chart options
     options: {
-      layout: {
-        padding: {
-          left: 0,
-          right: 0,
-          top: 50,
-          bottom: 0
-        }
-      },
       legend: {
         display: false
       },
@@ -264,7 +284,7 @@ function renderChart() {
           ticks: {
             beginAtZero: true,
             fontSize: 18,
-            max: Math.max.apply(Math, viewsArr) + 1
+            max: Math.max.apply(Math, chartSetting.viewsArr) + 1
           },
           scaleLabel: {
             display: true,
@@ -322,7 +342,7 @@ function renderVotes() {
   var ulEl = renderEl('ul', resultsEl);
 
   for (var i = 0; i < itemsWithVotesArr.length; i++) {
-    var string = `${capitalize(allImagesArr[itemsWithVotesArr[i]].name)}: ${allImagesArr[itemsWithVotesArr[i]].votes} vote(s) / ${allImagesArr[itemsWithVotesArr[i]].views} view(s) (rating: ${allImagesArr[itemsWithVotesArr[i]].rating()}%)`;
+    var string = `${capitalize(allImagesArr[itemsWithVotesArr[i].index].name)}: ${allImagesArr[itemsWithVotesArr[i].index].votes} vote(s) / ${allImagesArr[itemsWithVotesArr[i].index].views} view(s) (rating: ${allImagesArr[itemsWithVotesArr[i].index].rating()}%)`;
     renderEl('li', ulEl, string);
   }
   h4El.scrollIntoView();
