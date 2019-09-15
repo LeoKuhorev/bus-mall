@@ -140,6 +140,30 @@ h1 {
   align-content: space-between;
   padding-bottom: 30px;
 }
+.chart-container {
+  width: 90%;
+  margin: 10px auto;
+}
+.results-button {
+  padding: 10px 20px;
+  margin: 0 auto 25px auto;
+  background: rgba(255, 255, 255, 0.8);
+  font-family: 'Poiret One', cursive;
+  font-size: 20px;
+  letter-spacing: 2px;
+  font-weight: 600;
+  outline: none;
+  border: none;
+  border-radius: 3px;
+  box-shadow: 1px 1px 3px 0px rgba(0,0,0,0.3);
+}
+.results-button:hover {
+  background: rgba(97, 198, 255, 0.5);
+  transition: 200ms;
+}
+.results-button:active {
+  transform: translateY(4px);
+}
 #results ul {
   width: 800px;
   margin: 10px auto;
