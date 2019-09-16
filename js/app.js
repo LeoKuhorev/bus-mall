@@ -153,7 +153,6 @@ function favoriteItem() {
 
   //get the maximum value of rating property for every object in array and return it with 2 decimals
   var maxRating = Math.max.apply(Math, allImagesArr.map(function(object) { return object.rating(); })).toFixed(2);
-  console.log(maxRating);
 
   itemsWithVotesArr.length = 0;
 
@@ -227,7 +226,7 @@ function renderChart() {
   renderEl('h4', divEl, 'PLEASE SEE THE ITEMS YOU PICKED:');
   divEl.className = 'chart-container';
   var chartEl = renderEl('canvas', divEl);
-  chartEl.getContext('2d');
+  // chartEl.getContext('2d'); - why do we need this at all?
 
   // eslint-disable-next-line no-undef
   Chart.defaults.global.defaultFontFamily = 'Poiret One';
@@ -372,6 +371,11 @@ function votesHandler(e) {
 
 //function for changing items per page by user request
 function changeDisplayedPictures(e) {
+
+  //reduce views count for items that are going to be replaced
+  for (var i = (indexArr.length - itemsPerPage); i < indexArr.length; i++) {
+    allImagesArr[indexArr[i]].views --;
+  }
   itemsPerPage = parseInt(e.target.value);
   renderAllPictures();
   imageContainerEl.scrollIntoView();
