@@ -153,7 +153,6 @@ function favoriteItem() {
 
   //get the maximum value of rating property for every object in array and return it with 2 decimals
   var maxRating = Math.max.apply(Math, allImagesArr.map(function(object) { return object.rating(); })).toFixed(2);
-  console.log(maxRating);
 
   itemsWithVotesArr.length = 0;
 
@@ -208,7 +207,7 @@ function renderChart() {
 
     //assign different color for favorite items
     if (itemsWithVotesArr[i].favorite) {
-      chartSetting.colorsViewsArr.push('rgba(4, 144, 224, 0.7)');
+      chartSetting.colorsViewsArr.push('rgba(121, 224, 68, 0.6)');
       chartSetting.colorsVotesArr.push('rgba(255, 0, 0, 0.9)');
       chartSetting.borderViewsArr.push('rgba(28, 135, 197, 1.0)');
       chartSetting.borderVotesArr.push('rgba(138, 5, 5, 1.0)');
@@ -227,7 +226,7 @@ function renderChart() {
   renderEl('h4', divEl, 'PLEASE SEE THE ITEMS YOU PICKED:');
   divEl.className = 'chart-container';
   var chartEl = renderEl('canvas', divEl);
-  chartEl.getContext('2d');
+  // chartEl.getContext('2d'); - why do we need this at all?
 
   // eslint-disable-next-line no-undef
   Chart.defaults.global.defaultFontFamily = 'Poiret One';
@@ -327,11 +326,11 @@ function renderChart() {
   //render button for showing list results
   var buttonEl = renderEl('button', divEl, 'DISPLAY LIST');
   buttonEl.className = 'results-button';
-  buttonEl.addEventListener('click', renderVotes);
+  buttonEl.addEventListener('click', renderList);
 }
 
 //function for rendering list with items
-function renderVotes() {
+function renderList() {
 
   //removing button element
   var buttonEl = document.getElementsByClassName('results-button')[0];
@@ -351,27 +350,34 @@ function renderVotes() {
 //*****EVENT HANDLERS*****
 //function for counting number of votes
 function votesHandler(e) {
-  votesCount++;
-  for (var i = 0; i < allImagesArr.length; i++) {
-    if (e.target.title === capitalize(allImagesArr[i].name)) {
-      allImagesArr[i].votes++;
+  if (e.target.tagName === 'IMG') {
+    votesCount++;
+    for (var i = 0; i < allImagesArr.length; i++) {
+      if (e.target.title === capitalize(allImagesArr[i].name)) {
+        allImagesArr[i].votes++;
+      }
     }
-  }
 
-  //when user spends all votes - render list with results
-  if (votesCount >= VOTES) {
-    imageContainerEl.removeEventListener('click', votesHandler);
-    favoriteItem();
-    renderChart();
-  }
+    //when user spends all votes - render list with results
+    if (votesCount >= VOTES) {
+      imageContainerEl.removeEventListener('click', votesHandler);
+      favoriteItem();
+      renderChart();
+    }
 
-  //render new pictures and progress bar
-  renderAllPictures();
-  renderProgressBar();
+    //render new pictures and progress bar
+    renderAllPictures();
+    renderProgressBar();
+  }
 }
 
 //function for changing items per page by user request
 function changeDisplayedPictures(e) {
+
+  //reduce views count for items that are going to be replaced
+  for (var i = (indexArr.length - itemsPerPage); i < indexArr.length; i++) {
+    allImagesArr[indexArr[i]].views --;
+  }
   itemsPerPage = parseInt(e.target.value);
   renderAllPictures();
   imageContainerEl.scrollIntoView();
