@@ -207,7 +207,7 @@ function renderChart() {
 
     //assign different color for favorite items
     if (itemsWithVotesArr[i].favorite) {
-      chartSetting.colorsViewsArr.push('rgba(4, 144, 224, 0.7)');
+      chartSetting.colorsViewsArr.push('rgba(121, 224, 68, 0.6)');
       chartSetting.colorsVotesArr.push('rgba(255, 0, 0, 0.9)');
       chartSetting.borderViewsArr.push('rgba(28, 135, 197, 1.0)');
       chartSetting.borderVotesArr.push('rgba(138, 5, 5, 1.0)');
