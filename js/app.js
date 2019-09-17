@@ -326,11 +326,11 @@ function renderChart() {
   //render button for showing list results
   var buttonEl = renderEl('button', divEl, 'DISPLAY LIST');
   buttonEl.className = 'results-button';
-  buttonEl.addEventListener('click', renderVotes);
+  buttonEl.addEventListener('click', renderList);
 }
 
 //function for rendering list with items
-function renderVotes() {
+function renderList() {
 
   //removing button element
   var buttonEl = document.getElementsByClassName('results-button')[0];
@@ -350,23 +350,25 @@ function renderVotes() {
 //*****EVENT HANDLERS*****
 //function for counting number of votes
 function votesHandler(e) {
-  votesCount++;
-  for (var i = 0; i < allImagesArr.length; i++) {
-    if (e.target.title === capitalize(allImagesArr[i].name)) {
-      allImagesArr[i].votes++;
+  if (e.target.tagName === 'IMG') {
+    votesCount++;
+    for (var i = 0; i < allImagesArr.length; i++) {
+      if (e.target.title === capitalize(allImagesArr[i].name)) {
+        allImagesArr[i].votes++;
+      }
     }
-  }
 
-  //when user spends all votes - render list with results
-  if (votesCount >= VOTES) {
-    imageContainerEl.removeEventListener('click', votesHandler);
-    favoriteItem();
-    renderChart();
-  }
+    //when user spends all votes - render list with results
+    if (votesCount >= VOTES) {
+      imageContainerEl.removeEventListener('click', votesHandler);
+      favoriteItem();
+      renderChart();
+    }
 
-  //render new pictures and progress bar
-  renderAllPictures();
-  renderProgressBar();
+    //render new pictures and progress bar
+    renderAllPictures();
+    renderProgressBar();
+  }
 }
 
 //function for changing items per page by user request
