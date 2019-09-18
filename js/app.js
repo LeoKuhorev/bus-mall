@@ -206,7 +206,7 @@ function renderChart() {
     chartSetting.viewsArr.push(allImagesArr[itemsWithVotesArr[i].index].views);
     chartSetting.ratingArr.push(allImagesArr[itemsWithVotesArr[i].index].rating());
 
-    //assign different color for favorite items
+    //assign different color for favorite and the rest of items
     if (itemsWithVotesArr[i].favorite) {
       chartSetting.colorsViewsArr.push('rgba(121, 224, 68, 0.6)');
       chartSetting.colorsVotesArr.push('rgba(255, 0, 0, 0.9)');
@@ -444,12 +444,12 @@ for (var i = 0; i < IMAGE_NAMES_ARR.length; i++) {
   new Item(IMAGE_NAMES_ARR[i]);
 }
 
-//if local storage contains information about current user, change settings
+//if local storage contains information about current page, restore settings
 if (localStorage['savedSettings']) {
   restoreSettings();
 }
 
-//rendering initial pictures and progress bar
+//rendering pictures and progress bar
 renderAllPictures();
 renderProgressBar();
 
