@@ -9,6 +9,8 @@ var resultsEl = document.getElementById('results');
 var progressBarEl = document.getElementById('progress-bar');
 var progressBarEmptyEl = document.getElementById('progress-bar-empty');
 var welcomeEl = document.getElementById('welcome');
+var welcomePEl = document.getElementById('welcome-p');
+var startOverButtonEl = document.getElementsByClassName('button')[0];
 
 //array with all image names
 var IMAGE_NAMES_ARR = ['R2D2-bag', 'banana-cutter', 'bathroom-stand', 'rainboots-with-holes', 'breakfast-maker', 'meatball-flavored-bubblegum', 'convex-chair', 'cthulhu-toy', 'duck-styled-dog-muzzle', 'dragon-meat-can', 'cutlery-pen-tips', 'pet-sweep', 'pizza-scissors', 'shark-sleeping-bag', 'sweep-crawlers', 'tauntaun-sleeping-bag', 'unicorn-meat-can', 'usb-tentacle', 'water-can', 'wine-glass'];
@@ -22,11 +24,11 @@ var indexArr = [];
 //array with indexes of items with votes greater than 0
 var itemsWithVotesArr = [];
 
-//defining number of user votes
+//defining number of user votes and votes count
 var VOTES = 25;
 var votesCount = 0;
 
-//items per page (default value - 6)
+//items displayed per page (default value - 6)
 var itemsPerPage = 6;
 
 //*****FUNCTIONS*****
@@ -70,7 +72,7 @@ function capitalize(string) {
   return capitalize.split('-').join(' ');
 }
 
-//function for assigning unique random indexes
+//function for generating unique random number within allImages array length
 function uniqueIndex() {
   var index = generateRandom(allImagesArr.length);
   while (indexArr.length >= itemsPerPage * 2) {
@@ -83,7 +85,7 @@ function uniqueIndex() {
   return index;
 }
 
-//function for rendering any element
+//function for rendering any element to the page
 function renderEl(element, parent, textContent) {
   var newEl = document.createElement(element);
   if (textContent) {
@@ -93,7 +95,7 @@ function renderEl(element, parent, textContent) {
   return newEl;
 }
 
-//function for generating unique random pictures and rendering them to the page
+//function for generating unique random picture and rendering it to the page
 function generatePicture() {
   var index = uniqueIndex();
   var newEl = allImagesArr[index].renderImage(imageContainerEl);
@@ -155,15 +157,15 @@ function favoriteItem() {
   //get the maximum value of rating property for every object in array and return it with 2 decimals
   var maxRating = Math.max.apply(Math, allImagesArr.map(function(object) { return object.rating(); })).toFixed(2);
 
-  itemsWithVotesArr.length = 0;
-
   //render heading and image container
-  renderEl('h4', resultsEl, 'YOUR FAVORITE ITEM: ');
+  var h4El = renderEl('h4', resultsEl, 'YOUR FAVORITE ITEM:');
   var favImageContainerEl = renderEl('div', resultsEl);
   favImageContainerEl.id = 'favimage-container';
-
+  resultsEl.style.padding = '30px 0';
 
   //check how many pictures have the highest rating and render those to the page with their names and rating
+  itemsWithVotesArr.length = 0;
+  var favoriteItemsCount = 0;
   for (var i = 0; i < allImagesArr.length; i++) {
     if (allImagesArr[i].rating() === maxRating) {
       var divEl = renderEl('div', favImageContainerEl);
@@ -174,11 +176,15 @@ function favoriteItem() {
       renderEl('h3', divEl, 'views: ' + allImagesArr[i].views + ', votes: ' + allImagesArr[i].votes);
       renderEl('h3', divEl, '(rating: ' + allImagesArr[i].rating() + '%)');
 
-      //create an array with items with votes and specify favorite items
+      //create an array with items with votes and specify favorite items. this array will be used later when we build the chart
       itemsWithVotesArr.push({index: i, favorite: true});
+      favoriteItemsCount++;
     } else if (allImagesArr[i].votes > 0) {
       itemsWithVotesArr.push({index: i, favorite: false});
     }
+  }
+  if(favoriteItemsCount > 1) {
+    h4El.textContent = 'YOUR FAVORITE ITEMS:';
   }
   resultsEl.scrollIntoView();
 }
@@ -206,7 +212,7 @@ function renderChart() {
     chartSetting.viewsArr.push(allImagesArr[itemsWithVotesArr[i].index].views);
     chartSetting.ratingArr.push(allImagesArr[itemsWithVotesArr[i].index].rating());
 
-    //assign different color for favorite items
+    //assign different colors for favorite items and the rest of items
     if (itemsWithVotesArr[i].favorite) {
       chartSetting.colorsViewsArr.push('rgba(121, 224, 68, 0.6)');
       chartSetting.colorsVotesArr.push('rgba(255, 0, 0, 0.9)');
@@ -224,8 +230,8 @@ function renderChart() {
 
   //render <canvas> element to the page and build the chart
   var divEl = renderEl('div', resultsEl);
-  renderEl('h4', divEl, 'PLEASE SEE THE ITEMS YOU PICKED:');
   divEl.className = 'chart-container';
+  renderEl('h4', divEl, 'PLEASE SEE THE ITEMS YOU PICKED:');
   var chartEl = renderEl('canvas', divEl);
   // chartEl.getContext('2d'); - why do we need this at all?
 
@@ -269,7 +275,7 @@ function renderChart() {
     //chart options
     options: {
       legend: {
-        display: false
+        display: false //hide legend
       },
       tooltips: {
         mode: 'label',
@@ -284,7 +290,7 @@ function renderChart() {
           ticks: {
             beginAtZero: true,
             fontSize: 18,
-            max: Math.max.apply(Math, chartSetting.viewsArr) + 1
+            max: Math.max.apply(Math, chartSetting.viewsArr) + 1 //for Y views/votes scale show max value + 1
           },
           scaleLabel: {
             display: true,
@@ -326,18 +332,17 @@ function renderChart() {
 
   //render button for showing list results
   var buttonEl = renderEl('button', divEl, 'DISPLAY LIST');
-  buttonEl.className = 'results-button';
+  buttonEl.className = 'button';
   buttonEl.addEventListener('click', renderList);
 }
 
-//function for rendering list with items
+//function for rendering list with items with votes
 function renderList() {
 
   //removing button element
-  var buttonEl = document.getElementsByClassName('results-button')[0];
+  var buttonEl = document.getElementsByClassName('button')[1];
   buttonEl.remove();
 
-  resultsEl.style.paddingBottom = '30px';
   var h4El = renderEl('h4', resultsEl, 'HERE\'S THE LIST OF ITEMS YOU VOTED FOR:');
   var ulEl = renderEl('ul', resultsEl);
 
@@ -348,12 +353,13 @@ function renderList() {
   h4El.scrollIntoView();
 }
 
-//function for saving settings
+//function for saving settings into local storage
 function saveSettings() {
 
   //object that holds all settings
   var savedSettings = {
     savedItemsArr: [],
+    savedIndexes: [],
     savedVotesCount: 0,
     savedItemsPerPage: 0
   };
@@ -361,7 +367,6 @@ function saveSettings() {
   //save all items with their views and votes and push them into the object above
   for (var i = 0; i < allImagesArr.length; i++) {
     var savedItem = {
-      // name: allImagesArr[i].name,
       views: allImagesArr[i].views,
       votes: allImagesArr[i].votes,
     };
@@ -377,18 +382,22 @@ function saveSettings() {
 
 //function for restoring settings
 function restoreSettings() {
-  var restoredSettings = localStorage.getItem('savedSettings');
-  var savedSettings = JSON.parse(restoredSettings);
+  if (localStorage['savedSettings']) {
 
-  welcomeEl.textContent = 'WELCOME BACK TO THE BUS MALL SURVEY';
+    //get and parse the object from local storage
+    var restoredSettings = localStorage.getItem('savedSettings');
+    var savedSettings = JSON.parse(restoredSettings);
 
-  for (var i = 0; i < allImagesArr.length; i++) {
-    allImagesArr[i].views = savedSettings.savedItemsArr[i].views;
-    allImagesArr[i].votes = savedSettings.savedItemsArr[i].votes;
+    //restore all counters values and change welcome message
+    for (var i = 0; i < allImagesArr.length; i++) {
+      allImagesArr[i].views = savedSettings.savedItemsArr[i].views;
+      allImagesArr[i].votes = savedSettings.savedItemsArr[i].votes;
+    }
+    votesCount = savedSettings.savedVotesCount;
+    itemsPerPage = itemsPerPageEl.value = savedSettings.savedItemsPerPage;
+    welcomeEl.textContent = 'WELCOME BACK TO THE BUS MALL SURVEY';
+    welcomePEl.innerHTML = `Let's continue from where you left. Below you'll see our incredible items. Please click on the one that you would most likely buy. Be careful in your choice as our items are so amazing, and you have only ${VOTES - votesCount} votes left. <br /> Good luck!`;
   }
-  votesCount = savedSettings.savedVotesCount;
-  itemsPerPage = itemsPerPageEl.value = savedSettings.savedItemsPerPage;
-
 }
 
 //*****EVENT HANDLERS*****
@@ -438,21 +447,44 @@ function changeDisplayedPictures(e) {
   }
 }
 
+//function for restarting the survey
+function startOver() {
+
+  //nullify all counters, clear local storage, update greetings
+  for (var i = 0; i < allImagesArr.length; i++) {
+    allImagesArr[i].views = 0;
+    allImagesArr[i].votes = 0;
+  }
+  votesCount = 0;
+  localStorage.clear();
+  welcomeEl.textContent = 'WELCOME TO THE BUS MALL SURVEY';
+  welcomePEl.innerHTML = 'Below you\'ll be offered a list of our incredible items. Please choose the one that you would most likely buy. Be careful in your choice as every single item we offer is just amazing, and you have only 25 votes to spend. <br /> Good luck!';
+
+  renderAllPictures();
+  renderProgressBar();
+
+  //if result section has been dispplayed - clear it and reinstate event listener for image container
+  if (resultsEl.firstChild) {
+    while (resultsEl.firstChild) {
+      resultsEl.removeChild(resultsEl.firstChild);
+    }
+    resultsEl.style.padding = '0';
+    imageContainerEl.addEventListener('click', votesHandler);
+  }
+}
+
 //*****EXECUTION*****
 //creating object instances for all pictures
 for (var i = 0; i < IMAGE_NAMES_ARR.length; i++) {
   new Item(IMAGE_NAMES_ARR[i]);
 }
 
-//if local storage contains information about current user, change settings
-if (localStorage['savedSettings']) {
-  restoreSettings();
-}
-
-//rendering initial pictures and progress bar
+//restore settings and render pictures and progress bar
+restoreSettings();
 renderAllPictures();
 renderProgressBar();
 
 //*****EVENT LISTENERS*****
 imageContainerEl.addEventListener('click', votesHandler);
 itemsPerPageEl.addEventListener('change', changeDisplayedPictures);
+startOverButtonEl.addEventListener('click', startOver);

@@ -8,7 +8,17 @@ FEATURES:
 - users are given certain amount of votes (stored in *VOTES* variable in app.js) that they need to spend by clicking on the item they like the most;
 - amount of items per page can be changed in the dropdown;
 - no item matches the ones besides it or the ones that were shown immediately before (console logs dynamically changing array (depending on item per page value) with unique indexes for each item);
-- after users run out of votes the app shows them their favorite item (based on votes/views ratio) and list of the items they picked;
+- after users run out of votes the app shows them their:
+    - favorite item/items (based on votes/views ratio);
+    - chart that shows only items that user voted for with corresponding number of views, votes and rating. The favorite item/items bar has different color so that it can be easily distinguished;
+    - if user wants to see the list of the items they voted for, there's a button for that;
+- number of votes left, items per page, votes and views count are stored in local storage and are retrieved when user refreshes the page or closes the browser completely. Date from local storage will be cleared when user fully completes the survey (all 25 votes are spent);
+- start over button will nullify all counters and start the survey again;
+
+
+TOOLS USED:
+- chart.js API
+- local storage
 
 
 ---------------------------------
@@ -17,6 +27,8 @@ CREDITS:
 [Bus image](https://publicdomainvectors.org/)
 
 [Bus icon by Icons8](https://icons8.com/icon/119440/bus)
+
+[Chart.js](https://www.chartjs.org)
 
 [Flexbox](https://www.w3schools.com/css/css3_flexbox.asp)
 
