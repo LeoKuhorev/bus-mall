@@ -38,7 +38,18 @@ h1 {
 }
 
 /* IMAGES */
-#image-wrapper {
+#welcome-wrapper p {
+  font-size: 25px;
+  width: 90%;
+  margin: auto;
+  padding-bottom: 20px;
+  text-align: center;
+  line-height: 50px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  /* font-weight: 600; */
+}
+#image-wrapper, #welcome-wrapper {
   text-align: center;
   padding: 0 15px;
   background: #fcffdf;
