@@ -9,6 +9,8 @@ var resultsEl = document.getElementById('results');
 var progressBarEl = document.getElementById('progress-bar');
 var progressBarEmptyEl = document.getElementById('progress-bar-empty');
 var welcomeEl = document.getElementById('welcome');
+var welcomePEl = document.getElementById('welcome-p');
+var startOverButtonEl = document.getElementsByClassName('button')[0];
 
 //array with all image names
 var IMAGE_NAMES_ARR = ['R2D2-bag', 'banana-cutter', 'bathroom-stand', 'rainboots-with-holes', 'breakfast-maker', 'meatball-flavored-bubblegum', 'convex-chair', 'cthulhu-toy', 'duck-styled-dog-muzzle', 'dragon-meat-can', 'cutlery-pen-tips', 'pet-sweep', 'pizza-scissors', 'shark-sleeping-bag', 'sweep-crawlers', 'tauntaun-sleeping-bag', 'unicorn-meat-can', 'usb-tentacle', 'water-can', 'wine-glass'];
@@ -149,6 +151,28 @@ function renderProgressBar() {
   }
 }
 
+//function for restarting the survey
+function startOver() {
+  for (var i = 0; i < allImagesArr.length; i++) {
+    allImagesArr[i].views = 0;
+    allImagesArr[i].votes = 0;
+  }
+  votesCount = 0;
+  localStorage.clear();
+
+  renderAllPictures();
+  renderProgressBar();
+
+  //if result section has been dispplayed - clear it and reinstate event listener for image container
+  if (resultsEl.firstChild) {
+    while (resultsEl.firstChild) {
+      resultsEl.removeChild(resultsEl.firstChild);
+    }
+    resultsEl.style.padding = '0';
+    imageContainerEl.addEventListener('click', votesHandler);
+  }
+}
+
 //function for rendering items with highest rating
 function favoriteItem() {
 
@@ -161,7 +185,7 @@ function favoriteItem() {
   renderEl('h4', resultsEl, 'YOUR FAVORITE ITEM: ');
   var favImageContainerEl = renderEl('div', resultsEl);
   favImageContainerEl.id = 'favimage-container';
-
+  resultsEl.style.padding = '30px 0';
 
   //check how many pictures have the highest rating and render those to the page with their names and rating
   for (var i = 0; i < allImagesArr.length; i++) {
@@ -326,7 +350,7 @@ function renderChart() {
 
   //render button for showing list results
   var buttonEl = renderEl('button', divEl, 'DISPLAY LIST');
-  buttonEl.className = 'results-button';
+  buttonEl.className = 'button';
   buttonEl.addEventListener('click', renderList);
 }
 
@@ -334,10 +358,9 @@ function renderChart() {
 function renderList() {
 
   //removing button element
-  var buttonEl = document.getElementsByClassName('results-button')[0];
+  var buttonEl = document.getElementsByClassName('button')[1];
   buttonEl.remove();
 
-  resultsEl.style.paddingBottom = '30px';
   var h4El = renderEl('h4', resultsEl, 'HERE\'S THE LIST OF ITEMS YOU VOTED FOR:');
   var ulEl = renderEl('ul', resultsEl);
 
@@ -354,6 +377,7 @@ function saveSettings() {
   //object that holds all settings
   var savedSettings = {
     savedItemsArr: [],
+    savedIndexes: [],
     savedVotesCount: 0,
     savedItemsPerPage: 0
   };
@@ -380,8 +404,6 @@ function restoreSettings() {
   var restoredSettings = localStorage.getItem('savedSettings');
   var savedSettings = JSON.parse(restoredSettings);
 
-  welcomeEl.textContent = 'WELCOME BACK TO THE BUS MALL SURVEY';
-
   for (var i = 0; i < allImagesArr.length; i++) {
     allImagesArr[i].views = savedSettings.savedItemsArr[i].views;
     allImagesArr[i].votes = savedSettings.savedItemsArr[i].votes;
@@ -389,6 +411,8 @@ function restoreSettings() {
   votesCount = savedSettings.savedVotesCount;
   itemsPerPage = itemsPerPageEl.value = savedSettings.savedItemsPerPage;
 
+  welcomeEl.textContent = 'WELCOME BACK TO THE BUS MALL SURVEY';
+  welcomePEl.innerHTML = `Let's continue from where you left. Below you'll see our incredible items. Please click on the one that you would most likely buy. Be careful in your choice as our items are so amazing, and you have only ${VOTES - votesCount} votes left. <br /> Good luck!`;
 }
 
 //*****EVENT HANDLERS*****
@@ -456,3 +480,4 @@ renderProgressBar();
 //*****EVENT LISTENERS*****
 imageContainerEl.addEventListener('click', votesHandler);
 itemsPerPageEl.addEventListener('change', changeDisplayedPictures);
+startOverButtonEl.addEventListener('click', startOver);
