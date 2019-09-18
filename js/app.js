@@ -8,6 +8,7 @@ var votesLeftEl = document.getElementById('votes-left');
 var resultsEl = document.getElementById('results');
 var progressBarEl = document.getElementById('progress-bar');
 var progressBarEmptyEl = document.getElementById('progress-bar-empty');
+var welcomeEl = document.getElementById('welcome');
 
 //array with all image names
 var IMAGE_NAMES_ARR = ['R2D2-bag', 'banana-cutter', 'bathroom-stand', 'rainboots-with-holes', 'breakfast-maker', 'meatball-flavored-bubblegum', 'convex-chair', 'cthulhu-toy', 'duck-styled-dog-muzzle', 'dragon-meat-can', 'cutlery-pen-tips', 'pet-sweep', 'pizza-scissors', 'shark-sleeping-bag', 'sweep-crawlers', 'tauntaun-sleeping-bag', 'unicorn-meat-can', 'usb-tentacle', 'water-can', 'wine-glass'];
@@ -347,6 +348,49 @@ function renderList() {
   h4El.scrollIntoView();
 }
 
+//function for saving settings
+function saveSettings() {
+
+  //object that holds all settings
+  var savedSettings = {
+    savedItemsArr: [],
+    savedVotesCount: 0,
+    savedItemsPerPage: 0
+  };
+
+  //save all items with their views and votes and push them into the object above
+  for (var i = 0; i < allImagesArr.length; i++) {
+    var savedItem = {
+      // name: allImagesArr[i].name,
+      views: allImagesArr[i].views,
+      votes: allImagesArr[i].votes,
+    };
+    savedSettings.savedItemsArr[i] = savedItem;
+  }
+  savedSettings.savedVotesCount = votesCount;
+  savedSettings.savedItemsPerPage = itemsPerPage;
+
+  //stringify and save the settings object in local storage
+  var savedSettingsStringified = JSON.stringify(savedSettings);
+  localStorage.setItem('savedSettings', savedSettingsStringified);
+}
+
+//function for restoring settings
+function restoreSettings() {
+  var restoredSettings = localStorage.getItem('savedSettings');
+  var savedSettings = JSON.parse(restoredSettings);
+
+  welcomeEl.textContent = 'WELCOME BACK TO THE BUS MALL SURVEY';
+
+  for (var i = 0; i < allImagesArr.length; i++) {
+    allImagesArr[i].views = savedSettings.savedItemsArr[i].views;
+    allImagesArr[i].votes = savedSettings.savedItemsArr[i].votes;
+  }
+  votesCount = savedSettings.savedVotesCount;
+  itemsPerPage = itemsPerPageEl.value = savedSettings.savedItemsPerPage;
+
+}
+
 //*****EVENT HANDLERS*****
 //function for counting number of votes
 function votesHandler(e) {
@@ -358,11 +402,15 @@ function votesHandler(e) {
       }
     }
 
+    //save settings
+    saveSettings();
+
     //when user spends all votes - render list with results
     if (votesCount >= VOTES) {
       imageContainerEl.removeEventListener('click', votesHandler);
       favoriteItem();
       renderChart();
+      localStorage.clear();
     }
 
     //render new pictures and progress bar
@@ -381,12 +429,24 @@ function changeDisplayedPictures(e) {
   itemsPerPage = parseInt(e.target.value);
   renderAllPictures();
   imageContainerEl.scrollIntoView();
+
+  //save settings
+  if ((VOTES - votesCount) > 0) {
+    saveSettings();
+  } else {
+    localStorage.clear();
+  }
 }
 
 //*****EXECUTION*****
 //creating object instances for all pictures
 for (var i = 0; i < IMAGE_NAMES_ARR.length; i++) {
   new Item(IMAGE_NAMES_ARR[i]);
+}
+
+//if local storage contains information about current user, change settings
+if (localStorage['savedSettings']) {
+  restoreSettings();
 }
 
 //rendering initial pictures and progress bar
